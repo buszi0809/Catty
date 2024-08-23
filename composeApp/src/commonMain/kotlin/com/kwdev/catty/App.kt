@@ -2,7 +2,9 @@ package com.kwdev.catty
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
@@ -19,6 +21,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import catty.composeapp.generated.resources.Res
 import catty.composeapp.generated.resources.compose_multiplatform
+import com.kwdev.catty.ui.theme.CattyTheme
 import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
 
@@ -26,16 +29,17 @@ import org.koin.compose.koinInject
 @Preview
 fun App() {
     KoinContext {
-        MaterialTheme {
+        CattyTheme {
             var showContent by remember { mutableStateOf(false) }
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
                     .safeContentPadding(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Button(onClick = { showContent = !showContent }) {
-                    Text("Click me!")
+                    Text(text = "Click me!")
                 }
                 AnimatedVisibility(showContent) {
                     val greeting = koinInject<Greeting>()
@@ -44,7 +48,10 @@ fun App() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Image(painterResource(Res.drawable.compose_multiplatform), null)
-                        Text("Compose: ${greeting.greet()}")
+                        Text(
+                            text = "Compose: ${greeting.greet()}",
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
                     }
                 }
             }
