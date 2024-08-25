@@ -17,6 +17,8 @@ kotlinx-coroutines = "1.8.1"
 
 koin = "4.0.0-RC1"
 
+napier = "2.7.1"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
@@ -30,6 +32,8 @@ kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-co
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin"}
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin"}
 koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koin"}
+
+napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
