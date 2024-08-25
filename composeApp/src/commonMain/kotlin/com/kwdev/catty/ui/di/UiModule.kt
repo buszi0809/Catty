@@ -1,4 +1,4 @@
-package com.kwdev.catty.ui
+package com.kwdev.catty.ui.di
 
 import com.kwdev.catty.ui.home.HomeViewModel
 import org.koin.core.module.dsl.factoryOf

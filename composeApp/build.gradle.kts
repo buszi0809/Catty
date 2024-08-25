@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -40,6 +41,8 @@ kotlin {
             implementation(libs.androidx.core.ktx)
 
             implementation(libs.koin.android)
+
+            implementation(libs.ktor.engine.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -53,14 +56,29 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.runtime.compose)
 
+            implementation(libs.kotlinx.coroutines.core)
+
+            implementation(libs.kotlinx.serialization.json)
+
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+
+            implementation(libs.ktor.core)
+            implementation(libs.ktor.logging)
+            implementation(libs.ktor.content.negotiation)
+            implementation(libs.ktor.content.negotiation.json)
 
             implementation(libs.napier)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+
             implementation(libs.kotlinx.coroutines.swing)
+
+            implementation(libs.ktor.engine.apache)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.engine.darwin)
         }
     }
 }
