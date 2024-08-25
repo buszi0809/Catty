@@ -10,6 +10,7 @@ interface AppInitializer {
 
         private fun getAll(): List<AppInitializer> = listOf(
             LoggerInitializer(), // TODO init only for debug
+            ImageLoaderInitializer(),
         )
     }
 }

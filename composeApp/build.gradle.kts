@@ -69,6 +69,9 @@ kotlin {
             implementation(libs.ktor.content.negotiation.json)
 
             implementation(libs.napier)
+
+            implementation(libs.coil.compose)
+            implementation(libs.coil.ktor)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

@@ -2,8 +2,10 @@ package com.kwdev.catty.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -19,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.SubcomposeAsyncImage
 import com.kwdev.catty.ui.common.CollectFlowWithLifecycleEffect
 import com.kwdev.catty.ui.common.component.ProgressDialog
 import com.kwdev.catty.ui.common.koinViewModel
@@ -47,7 +50,9 @@ internal fun HomeScreen() {
         snackbarHost = { SnackbarHost(snackbarState) },
     ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
@@ -55,6 +60,21 @@ internal fun HomeScreen() {
                 onClick = { viewModel.onViewEvent(OnGetRandomClick) },
                 content = { Text(text = "Get new random image") },
             )
+            if (viewState.imageUrl != null) {
+                SubcomposeAsyncImage(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(20.dp),
+                    model = viewState.imageUrl,
+                    contentDescription = null,
+                    loading = {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    },
+                    error = { error ->
+                        Text(text = error.result.throwable.message ?: "Could not download image")
+                    },
+                )
+            }
             Text(
                 modifier = Modifier
                     .padding(innerPadding)
