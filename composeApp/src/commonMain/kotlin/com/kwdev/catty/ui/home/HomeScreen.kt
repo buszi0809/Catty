@@ -1,5 +1,7 @@
 package com.kwdev.catty.ui.home
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,13 +23,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.SubcomposeAsyncImage
 import com.kwdev.catty.ui.common.CollectFlowWithLifecycleEffect
 import com.kwdev.catty.ui.common.component.ProgressDialog
 import com.kwdev.catty.ui.common.koinViewModel
 import com.kwdev.catty.ui.home.HomeViewModel.ViewAction
 import com.kwdev.catty.ui.home.HomeViewModel.ViewAction.ShowSnackbar
-import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomClick
+import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent
+import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomGifClick
+import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomImageClick
+import com.kwdev.catty.ui.home.HomeViewModel.ViewState
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -42,49 +48,11 @@ internal fun HomeScreen() {
         onViewAction(action, snackbarState, coroutineScope)
     }
 
-    if (viewState.isLoading) {
-        ProgressDialog()
-    }
-
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarState) },
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-        ) {
-            FilledTonalButton(
-                onClick = { viewModel.onViewEvent(OnGetRandomClick) },
-                content = { Text(text = "Get new random image") },
-            )
-            if (viewState.imageUrl != null) {
-                SubcomposeAsyncImage(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(20.dp),
-                    model = viewState.imageUrl,
-                    contentDescription = null,
-                    loading = {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                    },
-                    error = { error ->
-                        Text(text = error.result.throwable.message ?: "Could not download image")
-                    },
-                )
-            }
-            Text(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxWidth(),
-                text = viewState.imageUrl ?: "not loaded yet",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
+    ScreenContent(
+        viewState = viewState,
+        snackbarState = snackbarState,
+        onViewEvent = viewModel::onViewEvent,
+    )
 }
 
 private fun onViewAction(
@@ -96,5 +64,75 @@ private fun onViewAction(
         is ShowSnackbar -> coroutineScope.launch {
             snackbarState.showSnackbar(message = action.message)
         }
+    }
+}
+
+@Composable
+private fun ScreenContent(
+    viewState: ViewState,
+    snackbarState: SnackbarHostState,
+    onViewEvent: (ViewEvent) -> Unit,
+) {
+    if (viewState.isLoading) {
+        ProgressDialog()
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarState) },
+    ) { innerPadding ->
+        ScreenScaffoldContent(
+            modifier = Modifier.padding(innerPadding),
+            viewState = viewState,
+            onViewEvent = onViewEvent,
+        )
+    }
+}
+
+@Composable
+private fun ScreenScaffoldContent(
+    modifier: Modifier,
+    viewState: ViewState,
+    onViewEvent: (ViewEvent) -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        FilledTonalButton(
+            onClick = { onViewEvent(OnGetRandomImageClick) },
+            content = { Text(text = "Get new random image") },
+        )
+        FilledTonalButton(
+            onClick = { onViewEvent(OnGetRandomGifClick) },
+            content = { Text(text = "Get new random gif") },
+        )
+        if (viewState.imageUrl != null) {
+            KamelImage(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                resource = { asyncPainterResource(data = viewState.imageUrl) },
+                contentDescription = null,
+                onLoading = {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                },
+                onFailure = { cause ->
+                    Text(
+                        modifier = Modifier.align(Alignment.Center),
+                        text = cause.message ?: "Could not download image",
+                    )
+                },
+            )
+        }
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = viewState.imageUrl ?: "not loaded yet",
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+        )
     }
 }

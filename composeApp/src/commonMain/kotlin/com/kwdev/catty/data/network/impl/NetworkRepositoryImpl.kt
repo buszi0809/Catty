@@ -14,13 +14,18 @@ internal class NetworkRepositoryImpl(
     private val clientParams: ClientParams,
 ) : NetworkRepository {
 
-    override suspend fun getRandomImage(): Result<String> = runCatching {
-        httpClient.get("cat") {
+    override suspend fun getRandomImage(gif: Boolean): Result<String> = runCatching {
+        httpClient.get(if (gif) "cat/gif" else "cat") {
             accept(Application.Json)
         }
             .body<CatDto>()
             .let { catDto ->
-                clientParams.baseUrl + "cat/" + catDto.id
+                buildString {
+                    append(clientParams.baseUrl)
+                    append("cat/")
+                    append(catDto.id)
+                    if (gif) append(".gif")
+                }
             }
     }
 }

@@ -1,12 +1,10 @@
 package com.kwdev.catty.data.network
 
-import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.accept
 import io.ktor.client.statement.bodyAsText
@@ -22,7 +20,7 @@ fun createHttpClient(params: ClientParams) = HttpClient {
     }
 
     install(Logging) {
-        logger = NapierLogger
+        logger = NapierKtorLogger(tag = "KtorHttpClient")
         level = LogLevel.BODY
     }
 
@@ -39,12 +37,5 @@ fun createHttpClient(params: ClientParams) = HttpClient {
                 throw Exception("Http error ${response.status} - ${response.bodyAsText()}")
             }
         }
-    }
-}
-
-private object NapierLogger : Logger {
-
-    override fun log(message: String) {
-        Napier.d(message = message, tag = "KtorHttpClient")
     }
 }

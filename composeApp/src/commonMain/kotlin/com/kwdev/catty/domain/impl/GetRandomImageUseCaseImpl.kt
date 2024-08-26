@@ -10,7 +10,7 @@ internal class GetRandomImageUseCaseImpl(
     private val dispatcher: CoroutineDispatcher,
 ) : GetRandomImageUseCase {
 
-    override suspend fun invoke(): Result<String> = withContext(dispatcher) {
-        networkRepository.getRandomImage()
+    override suspend fun invoke(gif: Boolean): Result<String> = withContext(dispatcher) {
+        networkRepository.getRandomImage(gif)
     }
 }

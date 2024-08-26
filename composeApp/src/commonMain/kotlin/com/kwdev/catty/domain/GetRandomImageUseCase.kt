@@ -1,5 +1,5 @@
 package com.kwdev.catty.domain
 
 interface GetRandomImageUseCase {
-    suspend operator fun invoke(): Result<String>
+    suspend operator fun invoke(gif: Boolean): Result<String>
 }

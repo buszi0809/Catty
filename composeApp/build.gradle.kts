@@ -70,8 +70,11 @@ kotlin {
 
             implementation(libs.napier)
 
-            implementation(libs.coil.compose)
-            implementation(libs.coil.ktor)
+            implementation(libs.kamel.image)
+            implementation(libs.kamel.decoder.bitmap)
+            implementation(libs.kamel.decoder.vector)
+            implementation(libs.kamel.decoder.svg)
+            implementation(libs.kamel.decoder.animated)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

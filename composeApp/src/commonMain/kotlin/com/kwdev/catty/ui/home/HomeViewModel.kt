@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kwdev.catty.domain.GetRandomImageUseCase
 import com.kwdev.catty.ui.home.HomeViewModel.ViewAction.ShowSnackbar
-import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomClick
+import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomGifClick
+import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomImageClick
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,14 +25,15 @@ internal class HomeViewModel(
 
     fun onViewEvent(event: ViewEvent) {
         when (event) {
-            OnGetRandomClick -> onGetRandomClick()
+            OnGetRandomImageClick -> onGetRandomClick(gif = false)
+            OnGetRandomGifClick -> onGetRandomClick(gif = true)
         }
     }
 
-    private fun onGetRandomClick() {
+    private fun onGetRandomClick(gif: Boolean) {
         mutableViewState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            getRandomImageUseCase()
+            getRandomImageUseCase(gif)
                 .onSuccess { url ->
                     mutableViewState.update {
                         it.copy(
@@ -53,7 +55,8 @@ internal class HomeViewModel(
     )
 
     sealed interface ViewEvent {
-        data object OnGetRandomClick : ViewEvent
+        data object OnGetRandomImageClick : ViewEvent
+        data object OnGetRandomGifClick : ViewEvent
     }
 
     sealed interface ViewAction {
