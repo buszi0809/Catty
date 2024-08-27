@@ -1,9 +1,8 @@
 package com.kwdev.catty.ui.home
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,6 +30,7 @@ import com.kwdev.catty.ui.home.HomeViewModel.ViewAction.ShowSnackbar
 import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent
 import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomGifClick
 import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomImageClick
+import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnMarkImageAsFavoriteClick
 import com.kwdev.catty.ui.home.HomeViewModel.ViewState
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -101,14 +101,25 @@ private fun ScreenScaffoldContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        FilledTonalButton(
-            onClick = { onViewEvent(OnGetRandomImageClick) },
-            content = { Text(text = "Get new random image") },
-        )
-        FilledTonalButton(
-            onClick = { onViewEvent(OnGetRandomGifClick) },
-            content = { Text(text = "Get new random gif") },
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FilledTonalButton(
+                modifier = Modifier.weight(1f),
+                onClick = { onViewEvent(OnGetRandomImageClick) },
+                content = { Text(text = "Get new random image") },
+            )
+            FilledTonalButton(
+                modifier = Modifier.weight(1f),
+                onClick = { onViewEvent(OnGetRandomGifClick) },
+                content = { Text(text = "Get new random gif") },
+            )
+            if (viewState.imageUrl != null) {
+                FilledTonalButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = { onViewEvent(OnMarkImageAsFavoriteClick) },
+                    content = { Text(text = "Mark as favorite") },
+                )
+            }
+        }
         if (viewState.imageUrl != null) {
             KamelImage(
                 modifier = Modifier

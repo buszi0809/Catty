@@ -4,10 +4,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidApplication)
 }
 
 kotlin {
@@ -75,6 +76,9 @@ kotlin {
             implementation(libs.kamel.decoder.vector)
             implementation(libs.kamel.decoder.svg)
             implementation(libs.kamel.decoder.animated)
+
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -124,6 +128,14 @@ android {
     dependencies {
         debugImplementation(compose.uiTooling)
     }
+}
+
+dependencies {
+    add("kspAndroid", libs.room.compiler)
+    add("kspDesktop", libs.room.compiler)
+    add("kspIosX64", libs.room.compiler)
+    add("kspIosArm64", libs.room.compiler)
+    add("kspIosSimulatorArm64", libs.room.compiler)
 }
 
 compose.desktop {

@@ -3,9 +3,11 @@ package com.kwdev.catty.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kwdev.catty.domain.GetRandomImageUseCase
+import com.kwdev.catty.domain.MarkImageAsFavoriteUseCase
 import com.kwdev.catty.ui.home.HomeViewModel.ViewAction.ShowSnackbar
 import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomGifClick
 import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomImageClick
+import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnMarkImageAsFavoriteClick
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +17,7 @@ import kotlinx.coroutines.launch
 
 internal class HomeViewModel(
     private val getRandomImageUseCase: GetRandomImageUseCase,
+    private val markImageAsFavoriteUseCase: MarkImageAsFavoriteUseCase,
 ) : ViewModel() {
 
     private val mutableViewState = MutableStateFlow(ViewState())
@@ -27,6 +30,13 @@ internal class HomeViewModel(
         when (event) {
             OnGetRandomImageClick -> onGetRandomClick(gif = false)
             OnGetRandomGifClick -> onGetRandomClick(gif = true)
+            OnMarkImageAsFavoriteClick -> onMarkImageAsFavoriteClick()
+        }
+    }
+
+    private fun onMarkImageAsFavoriteClick() {
+        viewModelScope.launch {
+            markImageAsFavoriteUseCase(requireNotNull(viewState.value.imageUrl))
         }
     }
 
@@ -57,6 +67,7 @@ internal class HomeViewModel(
     sealed interface ViewEvent {
         data object OnGetRandomImageClick : ViewEvent
         data object OnGetRandomGifClick : ViewEvent
+        data object OnMarkImageAsFavoriteClick : ViewEvent
     }
 
     sealed interface ViewAction {
