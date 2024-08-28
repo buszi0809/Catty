@@ -2,7 +2,8 @@ package com.kwdev.catty.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,30 +23,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.kwdev.catty.ui.common.CollectFlowWithLifecycleEffect
 import com.kwdev.catty.ui.common.component.ProgressDialog
 import com.kwdev.catty.ui.common.koinViewModel
 import com.kwdev.catty.ui.home.HomeViewModel.ViewAction
+import com.kwdev.catty.ui.home.HomeViewModel.ViewAction.NavigateFavorites
 import com.kwdev.catty.ui.home.HomeViewModel.ViewAction.ShowSnackbar
 import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent
+import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnFavoritesClick
 import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomGifClick
 import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomImageClick
 import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnMarkImageAsFavoriteClick
 import com.kwdev.catty.ui.home.HomeViewModel.ViewState
+import com.kwdev.catty.ui.navigation.NavRoute
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-internal fun HomeScreen() {
+internal fun HomeScreen(navController: NavController) {
     val viewModel = koinViewModel<HomeViewModel>()
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
     CollectFlowWithLifecycleEffect(viewModel.viewAction) { action ->
-        onViewAction(action, snackbarState, coroutineScope)
+        onViewAction(action, navController, snackbarState, coroutineScope)
     }
 
     ScreenContent(
@@ -57,6 +62,7 @@ internal fun HomeScreen() {
 
 private fun onViewAction(
     action: ViewAction,
+    navController: NavController,
     snackbarState: SnackbarHostState,
     coroutineScope: CoroutineScope,
 ) {
@@ -64,6 +70,8 @@ private fun onViewAction(
         is ShowSnackbar -> coroutineScope.launch {
             snackbarState.showSnackbar(message = action.message)
         }
+
+        NavigateFavorites -> navController.navigate(NavRoute.Favorites)
     }
 }
 
@@ -88,6 +96,7 @@ private fun ScreenContent(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ScreenScaffoldContent(
     modifier: Modifier,
@@ -101,20 +110,24 @@ private fun ScreenScaffoldContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
             FilledTonalButton(
-                modifier = Modifier.weight(1f),
                 onClick = { onViewEvent(OnGetRandomImageClick) },
                 content = { Text(text = "Get new random image") },
             )
             FilledTonalButton(
-                modifier = Modifier.weight(1f),
                 onClick = { onViewEvent(OnGetRandomGifClick) },
                 content = { Text(text = "Get new random gif") },
             )
+            FilledTonalButton(
+                onClick = { onViewEvent(OnFavoritesClick) },
+                content = { Text(text = "Check all favorites") },
+            )
             if (viewState.imageUrl != null) {
                 FilledTonalButton(
-                    modifier = Modifier.weight(1f),
                     onClick = { onViewEvent(OnMarkImageAsFavoriteClick) },
                     content = { Text(text = "Mark as favorite") },
                 )

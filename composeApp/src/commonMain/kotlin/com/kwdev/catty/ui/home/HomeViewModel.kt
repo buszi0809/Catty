@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kwdev.catty.domain.GetRandomImageUseCase
 import com.kwdev.catty.domain.MarkImageAsFavoriteUseCase
+import com.kwdev.catty.ui.home.HomeViewModel.ViewAction.NavigateFavorites
 import com.kwdev.catty.ui.home.HomeViewModel.ViewAction.ShowSnackbar
+import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnFavoritesClick
 import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomGifClick
 import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnGetRandomImageClick
 import com.kwdev.catty.ui.home.HomeViewModel.ViewEvent.OnMarkImageAsFavoriteClick
@@ -31,6 +33,7 @@ internal class HomeViewModel(
             OnGetRandomImageClick -> onGetRandomClick(gif = false)
             OnGetRandomGifClick -> onGetRandomClick(gif = true)
             OnMarkImageAsFavoriteClick -> onMarkImageAsFavoriteClick()
+            OnFavoritesClick -> mutableViewAction.trySend(NavigateFavorites)
         }
     }
 
@@ -68,9 +71,11 @@ internal class HomeViewModel(
         data object OnGetRandomImageClick : ViewEvent
         data object OnGetRandomGifClick : ViewEvent
         data object OnMarkImageAsFavoriteClick : ViewEvent
+        data object OnFavoritesClick : ViewEvent
     }
 
     sealed interface ViewAction {
         data class ShowSnackbar(val message: String) : ViewAction
+        data object NavigateFavorites : ViewAction
     }
 }
